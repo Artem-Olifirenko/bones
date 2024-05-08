@@ -1,0 +1,22 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: go.citilink.cloud/grpc-skeleton/internal/specs/grpcclient/gen
+  override:
+    GO_PACKAGE:
+      "validate/validate.proto": "github.com/envoyproxy/protoc-gen-validate/validate"
+plugins:
+  - name: go
+    out: internal/specs/grpcclient/gen
+    opt:
+      - paths=source_relative
+  - name: go-grpc
+    out: internal/specs/grpcclient/gen
+    opt:
+      - paths=source_relative
+  - name: validate
+    out: internal/specs/grpcclient/gen
+    opt:
+      - lang=go
+      - paths=source_relative

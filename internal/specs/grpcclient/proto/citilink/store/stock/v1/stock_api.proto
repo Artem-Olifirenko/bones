@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package citilink.store.stock.v1;
+
+option csharp_namespace = "Citilink.Store.Stock.V1";
+option go_package = "citilink/store/stock/v1;stockv1";
+option java_multiple_files = true;
+option java_outer_classname = "StockApiProto";
+option java_package = "com.citilink.store.stock.v1";
+option objc_class_prefix = "CSS";
+option php_namespace = "Citilink\\Store\\Stock\\V1";
+
+import "citilink/store/stock/v1/stock.proto";
+
+// Апи складов.
+service StockAPI {
+  // Находит все склады в пространстве.
+  rpc FindAllBySpaceId(FindAllBySpaceIdRequest) returns (FindAllBySpaceIdResponse);
+}
+
+message FindAllBySpaceIdRequest {
+  string space_id = 1;
+}
+
+message FindAllBySpaceIdResponse {
+  repeated StockInfo stock_info = 1;
+}

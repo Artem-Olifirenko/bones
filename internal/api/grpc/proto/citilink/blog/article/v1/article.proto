@@ -1,0 +1,39 @@
+// TODO это вымышленный пример proto-файла, удалите директорию grpc в реальном приложении
+// руководство по описанию протофайлов - https://github.com/uber/prototool
+// документация для Proto3 - https://developers.google.com/protocol-buffers/docs/proto3
+
+syntax = "proto3";
+
+package citilink.blog.article.v1;
+
+option csharp_namespace = "Citilink.Blog.Article.V1";
+option go_package = "citilink/blog/article/v1;articlev1";
+option java_multiple_files = true;
+option java_outer_classname = "ArticleProto";
+option java_package = "com.citilink.blog.article.v1";
+option objc_class_prefix = "CBA";
+option php_namespace = "Citilink\\Blog\\Article\\V1";
+
+// Article статья.
+message Article {
+  // Идентификатор
+  int32 id = 1;
+  // Название
+  string title = 2;
+  // Контент
+  string content = 3;
+  // Идентификатор категории
+  Category category = 4;
+  // Теги
+  repeated string tags = 5;
+  // Видимость
+  bool is_visible = 6;
+}
+
+// Category категория.
+enum Category {
+  CATEGORY_INVALID = 0;
+  CATEGORY_PEOPLE = 1;
+  CATEGORY_ANIMALS = 2;
+  CATEGORY_TRAVELS = 3;
+}

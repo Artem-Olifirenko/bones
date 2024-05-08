@@ -1,0 +1,182 @@
+// TODO это вымышленный пример proto-файла, удалите директорию grpc в реальном приложении
+// руководство по описанию протофайлов - https://github.com/uber/prototool
+// документация для Proto3 - https://developers.google.com/protocol-buffers/docs/proto3
+
+syntax = "proto3";
+
+package citilink.blog.article.v1;
+
+option csharp_namespace = "Citilink.Blog.Article.V1";
+option go_package = "citilink/blog/article/v1;articlev1";
+option java_multiple_files = true;
+option java_outer_classname = "ArticleApiProto";
+option java_package = "com.citilink.blog.article.v1";
+option objc_class_prefix = "CBA";
+option php_namespace = "Citilink\\Blog\\Article\\V1";
+
+import "citilink/blog/article/v1/article.proto";
+import "google/protobuf/wrappers.proto";
+import "validate/validate.proto";
+
+// API сервера статей.
+service ArticleAPI {
+  // Создает статью.
+  rpc Create(CreateRequest) returns (CreateResponse);
+  // Обновляет статью.
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  // Получает статью.
+  rpc Get(GetRequest) returns (GetResponse);
+  // Filter фильтрует статьи.
+  rpc Filter(FilterRequest) returns (FilterResponse);
+  // Удаляет статью.
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message CreateRequest {
+  // Название
+  string title = 1 [
+    (validate.rules).string = {
+      min_len: 1
+      max_len: 255
+    }
+  ];
+  // Контент
+  string content = 2 [
+    (validate.rules).string = {
+      max_len: 500
+    }
+  ];
+  // Категория
+  Category category = 3 [
+    (validate.rules).enum = {
+      defined_only: true
+    }
+  ];
+  // Теги
+  repeated string tags = 4 [
+    (validate.rules).repeated = {
+      min_items: 1
+      unique: true
+    },
+    (validate.rules).repeated.items.string = {
+      min_len: 1
+      max_len: 32
+    }
+  ];
+  // Видимость
+  bool is_visible = 5;
+}
+
+message CreateResponse {
+  Article article = 1;
+}
+
+message UpdateRequest {
+  // Идентификатор статьи
+  int32 id = 1;
+  // Название
+  TitleValue title = 2;
+  // Контент
+  ContentValue content = 3;
+  // Категория
+  CategoryValue category = 4;
+  // Теги
+  TagsValues tags = 5;
+  // Видимость
+  google.protobuf.BoolValue is_visible = 6;
+  // Значение названия.
+  message TitleValue {
+    string value = 1 [
+      (validate.rules).string = {
+        min_len: 1
+        max_len: 255
+      }
+    ];
+  }
+  // Значение контента.
+  message ContentValue {
+    string value = 1 [
+      (validate.rules).string = {
+        max_len: 500
+      }
+    ];
+  }
+  // Значение категории.
+  message CategoryValue {
+    Category value = 1 [
+      (validate.rules).enum = {
+        defined_only: true
+      }
+    ];
+  }
+  // Значения тегов.
+  message TagsValues {
+    repeated string values = 1 [
+      (validate.rules).repeated = {
+        unique: true
+      },
+      (validate.rules).repeated.items.string = {
+        min_len: 1
+        max_len: 32
+      }
+    ];
+  }
+}
+
+message UpdateResponse {
+  Article article = 1;
+}
+
+message GetRequest {
+  int32 id = 1 [
+    (validate.rules).int32 = {
+      gte: 1
+    }
+  ];
+}
+
+message GetResponse {
+  Article article = 1;
+}
+
+message FilterRequest {
+  // Идентификаторы категорий
+  repeated Category categories = 2 [
+    (validate.rules).repeated = {
+      unique: true
+    },
+    (validate.rules).repeated.items.enum = {
+      defined_only: true
+    }
+  ];
+  // Теги
+  repeated string tags = 3 [
+    (validate.rules).repeated = {
+      unique: true
+    },
+    (validate.rules).repeated.items.string = {
+      min_len: 1
+      max_len: 32
+    }
+  ];
+  // Только видимые
+  bool only_visible = 4;
+}
+
+message FilterResponse {
+  repeated Article articles = 1;
+}
+
+message DeleteRequest {
+  repeated int32 ids = 1 [
+    (validate.rules).repeated = {
+      min_items: 1
+      unique: true
+    },
+    (validate.rules).repeated.items.int32 = {
+      gte: 1
+    }
+  ];
+}
+
+message DeleteResponse {}

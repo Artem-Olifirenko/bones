@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package citilink.store.stock.v1;
+
+option csharp_namespace = "Citilink.Store.Stock.V1";
+option go_package = "citilink/store/stock/v1;stockv1";
+option java_multiple_files = true;
+option java_outer_classname = "StockProto";
+option java_package = "com.citilink.store.stock.v1";
+option objc_class_prefix = "CSS";
+option php_namespace = "Citilink\\Store\\Stock\\V1";
+
+// Полная информация о складе.
+message StockInfo {
+  Stock stock = 1;
+  string name = 2;
+  string pup_id = 3;
+  // Склад.
+  message Stock {
+    int32 id = 1;
+    Type type = 2;
+    string name = 3;
+    // Типы складов.
+    enum Type {
+      TYPE_INVALID = 0;
+      // Склад в полноформатнике
+      TYPE_STOCK_IN_STORE = 2;
+      // Склад обычный
+      TYPE_SIMPLE = 3;
+      // Склад региональный
+      TYPE_REG = 4;
+      // В транзите
+      TYPE_TRANSIT = 5;
+      // Склад консолидации
+      TYPE_CONSOLIDATION = 6;
+    }
+  }
+}

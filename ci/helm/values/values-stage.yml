@@ -1,0 +1,74 @@
+global:
+  namespace: services
+  replicaCount: 1
+  onlyDifferentNodes: false
+
+secrets:
+  enabled: false
+  serviceAccountName: "vault"
+
+consul:
+  enabled: false
+
+service:
+  environments:
+    - name: CL_HTTP_PRIVATE_LISTEN
+      value: ":8080"
+    - name: CL_HTTP_PUBLIC_LISTEN
+      value: ":80"
+    - name: CL_GRPC_LISTEN
+      value: ":9999"
+    - name: CL_LOG_LEVEL
+      value: info
+    - name: CL_LOG_JSON
+      value: "true"
+    - name: CL_STORE_ENDPOINT
+      value: "store.services.svc:9999"
+    - name: CL_ENABLE_PPROF
+      value: "false"
+
+  ports:
+    - name: http
+      port: 8080
+    - name: http-public
+      port: 80
+    - name: grpc
+      port: 9999
+
+  readinessProbe:
+    periodSeconds: 5
+    initialDelaySeconds: 5
+    httpGet:
+      port: http
+      path: /healthy
+
+  livenessProbe:
+    periodSeconds: 5
+    initialDelaySeconds: 5
+    httpGet:
+      port: http
+      path: /healthz
+
+virtualservice:
+  hosts:
+    - "{BS_REPO_NAME}.svc.citilink.lt"
+
+  gateways:
+    - gateways/wc-svc-citilink-lt
+
+  http:
+    - match:
+        - port: 9999
+      route:
+        - destination:
+            port:
+              number: 9999
+            host: '{BS_REPO_NAME}'
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: '{BS_REPO_NAME}'

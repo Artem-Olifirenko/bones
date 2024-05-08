@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package citilink.store.store.v1;
+
+option csharp_namespace = "Citilink.Store.Store.V1";
+option go_package = "citilink/store/store/v1;storev1";
+option java_multiple_files = true;
+option java_outer_classname = "StoreApiProto";
+option java_package = "com.citilink.store.store.v1";
+option objc_class_prefix = "CSS";
+option php_namespace = "Citilink\\Store\\Store\\V1";
+
+import "citilink/store/store/v1/store.proto";
+import "google/protobuf/wrappers.proto";
+
+// Апи магазинов.
+service StoreAPI {
+  // Возвращает все магазины. Метод не учитывает заполненность точки (need_to_fill)
+  rpc FindAll(FindAllRequest) returns (FindAllResponse);
+  // Возвращает отфильтрованные магазины. Если фильтров нет - возвращает все магазины
+  // по умолчанию возвращает все не скрытые (isHidden = false) и заполненные (need_to_fill == false) точки
+  rpc Filter(FilterRequest) returns (FilterResponse);
+  // Возвращает список идентификаторов пространства.
+  rpc GetSpaceIds(GetSpaceIdsRequest) returns (GetSpaceIdsResponse);
+  // Возвращает список терминальных идентификаторов пространства.
+  rpc GetTerminalSpaceIds(GetTerminalSpaceIdsRequest) returns (GetTerminalSpaceIdsResponse);
+}
+
+message FindAllRequest {
+  bool with_hidden = 1;
+}
+
+message FindAllResponse {
+  repeated Store stores = 1;
+  uint32 count = 2;
+}
+
+message FilterRequest {
+  repeated FilterUnit filters = 1;
+  bool with_hidden = 2;
+  // Учитывать не заполненные точки.
+  // Заполненная точка - это магазин, у которого заполнены все обязательные поля для отображения его сайте либо формирования фида в гугл/яндекс
+  // true - учитывать все, даже не заполненные точки; false - учитывать только заполненные точки
+  bool with_need_to_fill = 3;
+  // Условие фильтрации.
+  message FilterUnit {
+    bool not_modifier = 1;
+    string kladr_id = 2;
+    string fias_id = 3;
+    string pup_id = 4;
+    string space_id = 5;
+    google.protobuf.BoolValue hidden = 6;
+    InCityFilter in_city = 7;
+    google.protobuf.BoolValue is_main_store = 8;
+    string location_code = 9;
+    int32 pup_id_nav = 10;
+    // Фильтр города.
+    message InCityFilter {
+      string kladr_id = 1;
+      string fias_id = 2;
+      string city_id = 3;
+    }
+  }
+}
+
+message FilterResponse {
+  repeated Store stores = 1;
+  uint32 count = 2;
+}
+
+message GetSpaceIdsRequest {}
+
+message GetSpaceIdsResponse {
+  repeated string space_ids = 1;
+}
+
+message GetTerminalSpaceIdsRequest {}
+
+message GetTerminalSpaceIdsResponse {
+  repeated string terminal_space_ids = 1;
+}

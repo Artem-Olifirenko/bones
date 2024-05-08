@@ -1,0 +1,179 @@
+syntax = "proto3";
+
+package citilink.store.store.v1;
+
+option csharp_namespace = "Citilink.Store.Store.V1";
+option go_package = "citilink/store/store/v1;storev1";
+option java_multiple_files = true;
+option java_outer_classname = "StoreProto";
+option java_package = "com.citilink.store.store.v1";
+option objc_class_prefix = "CSS";
+option php_namespace = "Citilink\\Store\\Store\\V1";
+
+import "citilink/store/stock/v1/stock.proto";
+
+// Магазин.
+message Store {
+  string space_id = 1;
+  string pup_id = 2;
+  bool is_new = 3;
+  string city_name = 4;
+  string main_city_name_in_declination = 5;
+  bool is_city = 6;
+  string kladr_id = 7;
+  int32 utc_delta = 8;
+  bool blocked = 9;
+  float coord_x = 10;
+  float coord_y = 11;
+  string delivery_info = 12;
+  bool is_central_in_region = 13;
+  bool is_region = 14;
+  string name = 15;
+  repeated string phones = 16;
+  string html_phone = 17;
+  string pup_address = 18;
+  string route_descr = 19;
+  string service_info = 20;
+  repeated int32 service_list = 21;
+  string short_name = 22;
+  int32 sorting = 23;
+  string work_hours = 24;
+  string conf_service_email = 25;
+  string received_time = 26;
+  citilink.store.stock.v1.StockInfo.Stock linked_stock_in_region = 27;
+  bool can_provide_digital_services = 28;
+  bool is_suspended = 29;
+  int32 suspension_start = 30;
+  int32 suspension_end = 31;
+  string suspension_message = 32;
+  bool is_need_phone_call_to_reserve_discounted_product = 33;
+  string very_short_name = 34;
+  bool new_reservation_type = 35;
+  string legal_address_in_html = 36;
+  string ogrn = 37;
+  string services_list_in_html = 38;
+  int32 delivery_price = 39;
+  bool is_show_custom_map = 40;
+  string phone_for_b2b = 41;
+  string email_for_b2b = 42;
+  string legal_entity_address = 43;
+  repeated string pup_ids_of_linked_stores = 44;
+  Schedule schedule = 45;
+  Address address = 46;
+  bool is_hidden = 47;
+  string terminal_space_id = 48;
+  Type store_type = 49;
+  DeliveryOptions delivery_options = 50;
+  string location_code = 51;
+  int32 pup_id_nav = 52;
+  // Название юридического лица, из под которого работает Ситилинк с акронимом
+  string citilink_legal_entity_name_short = 53;
+  // Название юридического лица, из под которого работает Ситилинк без сокращений
+  string citilink_legal_entity_name_full = 54;
+  ShopType shop_type = 55;
+  // Заполнены ли все обязательные поля у магазина для отображения его сайте либо формирования фида в гугл/яндекс
+  // true - есть не заполненные поля, false - все важные поля заполнены
+  bool need_to_fill = 56;
+  // Идентификатор подрядчика по доставке (1-наши магазины, 2-dpd)
+  ShippingAgent shipping_agent = 57;
+  // График работы.
+  message Schedule {
+    // График работы рабочего дня.
+    message WorkDaySchedule {
+      DayOfWeek day_of_week = 1;
+      // Время.
+      message WorkTimePart {
+        int32 hour = 1;
+        int32 minute = 2;
+      }
+      WorkTimePart open = 2;
+      WorkTimePart close = 3;
+    }
+    repeated WorkDaySchedule work_days = 1;
+    repeated int32 non_work_days = 2;
+  }
+  // Адрес.
+  message Address {
+    string zip_code = 1;
+    string region = 2;
+    string area = 3;
+    string city = 4;
+    string street = 5;
+    string house = 6;
+    string building = 7;
+    string houseblock = 8;
+    string posession = 9;
+    int32 dimension = 10;
+    string note = 11;
+    // geo code области/региона в формате ISO 3166-2
+    string geo_code = 12;
+  }
+  // Опции доставки.
+  message DeliveryOptions {
+    bool is_move_to_full = 1;
+    bool is_move_to_mini = 2;
+    bool can_delivery = 3;
+    bool is_self_delivery_only = 4;
+  }
+  // Тип магазина. deprecated - использовать ShopType
+  enum Type {
+    TYPE_INVALID = 0;
+    // Полноформатный магазина
+    TYPE_FULL = 1;
+    // Магазин типа СМАРТ/МИДИ и так далее
+    TYPE_MAIN_MINI = 2;
+    // Мини (точка выдачи)
+    TYPE_MINI = 3;
+  }
+  // Идентификатор подрядчика по доставке.
+  enum ShippingAgent {
+    SHIPPING_AGENT_INVALID = 0;
+    // наши магазины
+    SHIPPING_AGENT_CITILINK = 1;
+    // dpd
+    SHIPPING_AGENT_DPD = 2;
+  }
+  // Тип магазина.
+  message ShopType {
+    Format shop_format = 1;
+    SubFormat shop_sub_format = 2;
+    // Формат магазина.
+    enum Format {
+      FORMAT_INVALID = 0;
+      // ПФМ - полноформатный магазин
+      FORMAT_FULL_FORMAT_SHOP = 1;
+      // СТВ - собственная точка вывоза
+      FORMAT_OWN_POINT_OF_EXPORT = 2;
+      // Точка вывоза на аутсорсе
+      FORMAT_OUTSOURCE = 3;
+    }
+    // Подвид магазина.
+    enum SubFormat {
+      SUB_FORMAT_INVALID = 0;
+      // Большой магазин (ПФМ)
+      SUB_FORMAT_MAXI = 1;
+      // Средний магазин (ПФМ)
+      SUB_FORMAT_MIDI = 2;
+      // Смарт точка (ПФМ)
+      SUB_FORMAT_SMART = 3;
+      // Шоурум (ПФМ)
+      SUB_FORMAT_SHOW_ROOM = 4;
+      // Мини точка продаж (СТВ)
+      SUB_FORMAT_MINI = 5;
+      // Точка продаж на аутсорсе
+      SUB_FORMAT_OUTSOURCE = 6;
+    }
+  }
+}
+
+// День недели.
+enum DayOfWeek {
+  DAY_OF_WEEK_INVALID = 0;
+  DAY_OF_WEEK_MONDAY = 1;
+  DAY_OF_WEEK_TUESDAY = 2;
+  DAY_OF_WEEK_WEDNESDAY = 3;
+  DAY_OF_WEEK_THURSDAY = 4;
+  DAY_OF_WEEK_FRIDAY = 5;
+  DAY_OF_WEEK_SATURDAY = 6;
+  DAY_OF_WEEK_SUNDAY = 7;
+}
